@@ -1,0 +1,30 @@
+library("caret")
+
+#import data
+setwd("C:/Users/anlowr")
+hr <- read.csv("Downloads/HR_comma_sep.csv", header = TRUE)
+hr <-cbind(rownames(hr), hr)
+
+#high perf. subset
+highperf <- subset(hr, last_evaluation >= .7, select = satisfaction_level:promotion_last_5years)
+
+
+set.seed(100)
+# Keep some data to test again the final model
+inTraining <- createDataPartition(highperf$left, p = .75, list = FALSE)
+training <- highperf[ inTraining,]
+testing  <- highperf[-inTraining,]
+
+# Estimate the drivers of attrition
+log.reg = glm(left ~ ., family=binomial(logit), data=training)
+
+# Make predictions on the out-of-sample data
+probaToLeave=predict(log.reg,newdata=testing,type="response")
+
+# Structure the prediction output in a table
+predattrition = data.frame(probaToLeave)
+
+# Add a column to the predattrition dataframe containing the performance
+predattrition$performance=testing$last_evaluation
+predattrition <- cbind(rownames(predattrition), predattrition)
+colnames(predattrition) <- c("Employee Number", "Prob. to Leave", "Performance")
