@@ -1,8 +1,8 @@
 library("caret")
 
 #import data
-setwd("C:/Users/anlowr")
-hr <- read.csv("Downloads/HR_comma_sep.csv", header = TRUE)
+setwd("Your WD here")
+hr <- read.csv("put file location here", header = TRUE)
 hr <-cbind(rownames(hr), hr)
 
 #high perf. subset
